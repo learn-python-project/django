@@ -1,0 +1,44 @@
+
+
+{% extends "master.html" %}
+
+{% block title %}
+  Details about {{ mymember.firstname }} {{ mymember.lastname }}
+{% endblock %}
+
+
+{% block content %}
+  <div class="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl">
+    <div class="md:flex">
+      <div class="md:flex-shrink-0">
+        <img class="h-48 w-full object-cover md:w-48" src="{{ random_url_img }}" alt="{{ mymember.firstname }} {{ mymember.lastname }}">
+      </div>
+      <div class="p-8">
+        <div class="uppercase tracking-wide text-sm text-indigo-500 font-semibold">{{ mymember.membership_type }}</div>
+        <a href="#" class="block mt-1 text-lg leading-tight font-medium text-black hover:underline">{{ mymember.firstname }} {{ mymember.lastname }}</a>
+        <p class="mt-2 text-gray-500">{{ mymember.bio }}</p>
+        <div class="mt-4">
+          <span class="text-gray-400">Phone:</span>
+          <span class="ml-2 text-gray-600">{{ mymember.phone }}</span>
+        </div>
+        <div class="mt-2">
+          <span class="text-gray-400">Member since:</span>
+          <span class="ml-2 text-gray-600">{{ mymember.joined_date }}</span>
+        </div>
+        <!-- ... Andere inhoud van de template ... -->
+
+<div class="mt-2">
+  <span class="text-gray-400">Function:</span>
+  <span class="ml-2 text-gray-600">
+    {% if mymember.function %}
+      {{ mymember.function }}
+    {% else %}
+      No function assigned
+    {% endif %}
+  </span>
+</div>
+
+      </div>
+    </div>
+  </div>
+{% endblock %}

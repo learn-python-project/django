@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>{% block title %}{% endblock %}</title>
+  {% load static tailwind_tags %}
+  {% tailwind_css %}
+</head>
+<body>
+  {% include "mymenu.html" with me="TOBIAS" sponsor="W3SCHOOLS" %}
+
+
+
+{% block content %}
+{% endblock %}
+  {% include "footer.html" with me="TOBIAS" sponsor="W3SCHOOLS" %}
+</body>
+</html>
