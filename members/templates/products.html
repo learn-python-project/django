@@ -1,34 +1,74 @@
-    {% extends "master.html" %} {% block title %} My Tennis Club - List of all
-    members {% endblock %}
-    
+{% extends "master.html" %}
+
+{% block title %} My Tennis Club - List of all members {% endblock %}
 
 {% block content %}
-<div class="container mx-auto">
-    <h1 class="text-3xl font-bold mb-8">Producten</h1>
+<div class="container mx-auto w-1/4">
+    {% comment %} create product {% endcomment %}
+    <a href="/product/create" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Create product</a>
+    <h1 class="text-3xl font-bold mb-8 w-1/4">Producten</h1>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-        {% for product in products %}
-       
-            <div class="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl">
-                <div class="md:flex">
-                    <div class="md:flex-shrink-0">
-                        <img class="h-48 w-full object-cover md:w-48" src="{{ img }}" alt="{{ product.name }}">
-                    </div>
-                    <div class="p-8">
-                        <div class="uppercase tracking-wide text-sm text-indigo-500 font-semibold">{{ product.category }}</div>
-                        <a href="product_detail/{{ product.id }}" class="block mt-1 text-lg leading-tight font-medium text-black hover:underline">{{ product.name }}</a>
-                        <p class="mt-2 text-gray-500">{{ product.description }}</p>
-                        <p class="mt-2 text-gray-700 font-bold">Prijs: {{ product.price }}</p>
-                    </div>
-                </div>
-            </div>
-        {% empty %}
-            <div class="bg-white rounded-lg shadow-lg">
-                <div class="p-6">
-                    <p class="text-gray-700 text-base mb-4">Geen producten beschikbaar.</p>
-                </div>
-            </div>
-        {% endfor %}
+    <div class="flex flex-wrap -mx-4 " id="products-container">
+        <!-- Producten zullen hier dynamisch worden ingevuld -->
     </div>
 </div>
-{% endblock %}
+
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Haal producten op van de API
+        fetch('/api/products/')
+            .then(response => response.json())
+            .then(products => {
+                const productsContainer = document.getElementById('products-container');
+    
+                // Vul de producten in de HTML in
+                products.forEach(product => {
+                    const productCard = document.createElement('div');
+                productCard.className = 'max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl px-4 mb-8';
+                productCard.innerHTML = `
+                    <div class="flex">
+                        <div class="flex-shrink-0 w-full md:w-48">
+                            <img class="h-48 w-full object-cover" src="{{ img }}" alt="${product.name}">
+                        </div>
+                        <div class="flex-grow p-8">
+                            <div class="uppercase tracking-wide text-sm text-indigo-500 font-semibold">${product.category}</div>
+                            <a href="product_detail/${product.id}" class="block mt-1 text-lg leading-tight font-medium text-black hover:underline">${product.name}</a>
+                            <p class="mt-2 text-gray-500">${product.description}</p>
+                            <p class="mt-2 text-gray-700 font-bold">Prijs: ${product.price}</p>
+                        </div>
+                    </div>
+                `;
+    
+                    // Voeg de categorie-ID als data-attribuut toe aan de productCard
+                    productCard.dataset.category = product.category;
+    
+                    productsContainer.appendChild(productCard);
+                });
+    
+                // Haal categorieën op van de API
+                fetch('/api/categories/')
+                    .then(response => response.json())
+                    .then(categories => {
+                        // Voeg categorieën toe aan de producten
+                        const categoryDict = {};
+                        categories.forEach(category => {
+                            categoryDict[category.id] = category.name;
+                        });
+    
+                        // Loop door elk product en vervang de categorie-ID door de categorie-naam
+                        const products = document.querySelectorAll('.max-w-md');
+                        products.forEach(product => {
+                            const categoryId = product.dataset.category;
+                            const categoryName = categoryDict[categoryId];
+                            product.querySelector('.category').textContent = categoryName;
+                        });
+                    })
+                    .catch(error => console.error('Error fetching categories:', error));
+            })
+            .catch(error => console.error('Error fetching products:', error));
+    });
+    </script>
+    
+    {% endblock %}

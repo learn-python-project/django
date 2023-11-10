@@ -1,0 +1,96 @@
+{% extends "master.html" %} 
+{% block title %} My Tennis Club - List of all members {% endblock %} 
+{% block content %}
+
+<div class="flex items-center justify-center h-screen">
+    <div class="flex flex-col md:flex-row bg-white rounded-lg shadow-lg overflow-hidden max-w-2xl">
+        <!-- Left Side with Illustration -->
+        <div class="md:w-1/2 bg-blue-500 p-8">
+            <img src="https://source.unsplash.com/400x500/?technology" alt="Illustration"
+                class="object-cover w-full h-full">
+        </div>
+        <!-- Right Side with Form -->
+        <div class="md:w-1/2 p-8">
+            <h1 class="text-3xl font-bold mb-4 text-gray-800">Create Product</h1>
+            <form id="productForm" class="flex flex-col space-y-4">
+                <label for="name" class="font-bold">Product Name:</label>
+                <input type="text" id="name" name="name" required class="border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <label for="price" class="font-bold">Price:</label>
+                <input type="number" id="price" name="price" step="0.01" required class="border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <label for="stock" class="font-bold">Stock:</label>
+                <input type="number" id="stock" name="stock" required class="border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <label for="image_url" class="font-bold">Image URL:</label>
+                <input type="text" id="image_url" name="image_url" required class="border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <label for="category" class="font-bold">Category:</label>
+                <input type="number" id="category" name="category" required class="border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <button type="button" onclick="createProduct()" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Create Product</button>
+            </form>
+            
+            <!-- Success Message -->
+            <div id="successMessage" class="mt-4 text-green-500 font-bold hidden">Product created successfully!</div>
+            
+            <!-- Error Message -->
+            <div id="errorMessage" class="mt-4 text-red-500 font-bold hidden"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function createProduct() {
+        // Gather data from form inputs
+        const formData = {
+            name: document.getElementById('name').value,
+            price: parseFloat(document.getElementById('price').value),
+            stock: parseInt(document.getElementById('stock').value),
+            image_url: document.getElementById('image_url').value,
+            category: parseInt(document.getElementById('category').value),
+        };
+
+        console.log('Form Data:', formData);
+
+        // Make a POST request to create a product
+        fetch('/api/products/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken'), // Include the CSRF token
+            },
+            body: JSON.stringify(formData),
+        })
+        .then(response => {
+            console.log('Response Status:', response.status);
+            if (response.ok) {
+                // Product created successfully
+                return response.json().then(data => {
+                    console.log('Success:', data);
+                    document.getElementById('successMessage').textContent = 'Product created successfully!';
+                    document.getElementById('successMessage').classList.remove('hidden');
+                    document.getElementById('errorMessage').classList.add('hidden');
+                });
+            } else {
+                // Error creating product
+                return response.json().then(error => {
+                    console.error('Error:', error);
+                    document.getElementById('errorMessage').textContent = error.detail;
+                    document.getElementById('errorMessage').classList.remove('hidden');
+                    document.getElementById('successMessage').classList.add('hidden');
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Fetch Error:', error);
+            document.getElementById('errorMessage').textContent = 'Something went wrong';
+            document.getElementById('errorMessage').classList.remove('hidden');
+            document.getElementById('successMessage').classList.add('hidden');
+        });
+    }
+
+    // Function to get CSRF token from cookies
+    function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+    }
+</script>
+
+{% endblock %}

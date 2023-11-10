@@ -1,19 +1,19 @@
-{% extends "master.html" %} {% block title %} My Tennis Club - List of all
-members {% endblock %}
- 
+{% extends "master.html" %}
 
+{% block title %}
+  My Tennis Club - Product Details
+{% endblock %}
 
 {% block content %}
   <div class="container mx-auto px-4 py-8">
     <div class="flex flex-wrap -mx-4">
       <div class="w-full md:w-1/2 px-4">
-        <div class="w-full md:w-1/2 px-4">
-            <img src="{{ img }}" alt="{{ product.name }}" class="w-full">
-        </div>
+        <img src="{{ img }}" alt="{{ product.name }}" class="object-cover">
+      </div>
       <div class="w-full md:w-1/2 px-4">
         <h1 class="text-3xl font-bold mb-4">{{ product.name }}</h1>
         <p class="text-gray-600 text-lg mb-4">{{ product.description }}</p>
-        <p class="text-gray-800 text-xl font-bold mb-4">${{ product.price }}</p>
+        <p class="text-gray-800 text-xl font-bold mb-4">Price: €{{ product.price }}</p>
         {% comment %} <form action="{% url 'cart:add_to_cart' product.id %}" method="post"> {% endcomment %}
           {% csrf_token %}
           <label for="quantity" class="block text-gray-700 font-bold mb-2">Quantity:</label>
